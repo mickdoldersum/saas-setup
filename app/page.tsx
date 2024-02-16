@@ -12,11 +12,18 @@ import Container from "@mui/material/Container"
 import Button from "@mui/material/Button"
 import MenuItem from "@mui/material/MenuItem"
 import AdbIcon from "@mui/icons-material/Adb"
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs"
+import { UserButton, useAuth } from "@clerk/nextjs"
+import { useRouter } from "next/navigation"
 
-const pages = ["Products", "Pricing", "Blog", "About", "Contact"]
+const pages = [
+  { name: "Home", href: "/" },
+  { name: "About", href: "/about" },
+  { name: "Contact", href: "/contact" },
+]
 
 function Home() {
+  const { isSignedIn } = useAuth()
+  const router = useRouter()
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null)
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -36,7 +43,7 @@ function Home() {
             variant="h6"
             noWrap
             component="a"
-            href="#app-bar-with-responsive-menu"
+            href="/"
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
@@ -49,7 +56,6 @@ function Home() {
           >
             LOGO
           </Typography>
-
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
               size="large"
@@ -80,8 +86,11 @@ function Home() {
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
+                <MenuItem
+                  key={page.name}
+                  onClick={() => router.push(page.href)}
+                >
+                  <Typography textAlign="center">{page.name}</Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -91,7 +100,7 @@ function Home() {
             variant="h5"
             noWrap
             component="a"
-            href="#app-bar-with-responsive-menu"
+            href="/"
             sx={{
               mr: 2,
               display: { xs: "flex", md: "none" },
@@ -108,29 +117,27 @@ function Home() {
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
               <Button
-                key={page}
-                onClick={handleCloseNavMenu}
+                key={page.name}
+                onClick={() => router.push(page.href)}
                 sx={{ my: 2, color: "white", display: "block" }}
               >
-                {page}
+                {page.name}
               </Button>
             ))}
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
-            <SignedIn>
+            {isSignedIn ? (
               <UserButton />
-            </SignedIn>
-            <SignedOut>
+            ) : (
               <Button
-                variant="outlined"
                 color="inherit"
                 href="/sign-in"
                 sx={{ display: { xs: "none", md: "block" } }}
               >
                 Sign In
               </Button>
-            </SignedOut>
+            )}
           </Box>
         </Toolbar>
       </Container>
